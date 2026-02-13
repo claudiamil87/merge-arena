@@ -2,7 +2,9 @@
 export const GAME_CONFIG = {
   width: 480,
   height: 854,
-  backgroundColor: '#1a1a2e'
+  backgroundColor: '#16213e', // Azul escuro mais vibrante
+  scaleMode: Phaser.Scale.FIT,
+  autoCenter: Phaser.Scale.CENTER_BOTH
 };
 
 export const HEX_CONFIG = {
@@ -20,24 +22,19 @@ export const BOARD_CONFIG = {
 
 export const TIMING = {
   deployPhaseSeconds: 30,
-  battlePhaseSeconds: 45,
+  battlePhaseSeconds: 30, // reduzido para teste
   frenzyStartSeconds: 10
 };
 
 export const ECONOMY = {
-  initialElixir: 5,
+  initialElixir: 10, // mais elixir inicial
   elixirPerRound: 4,
-  sellRefundFactor: 0.8, // devolve 80% do custo
+  sellRefundFactor: 0.8,
   shopSize: 3
 };
 
 export const BENCH_CONFIG = {
   slots: 5
-};
-
-export const MERGE_CONFIG = {
-  levels: [1, 2, 3, 4],
-  statsMultipliers: [1.0, 1.8, 3.2, 5.5]
 };
 
 // Cores por trait
@@ -57,6 +54,6 @@ export const TRAIT_COLORS: Record<string, string> = {
 
 // Cores das zonas do tabuleiro
 export const ZONE_COLORS = {
-  player: { base: '#2C3E50', accent: '#3498DB' },
-  enemy: { base: '#4a2c2c', accent: '#E74C3C' }
+  player: { base: '#1a3b5c', accent: '#3498DB' }, // azul mais claro
+  enemy: { base: '#3b1a1a', accent: '#E74C3C' }
 };

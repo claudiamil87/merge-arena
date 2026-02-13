@@ -2,11 +2,6 @@ import Phaser from 'phaser';
 import { GAME_CONFIG } from '../config/constants';
 
 export default class MenuScene extends Phaser.Scene {
-  private title!: Phaser.GameObjects.Text;
-  private playButton!: Phaser.GameObjects.Container;
-  private statsButton!: Phaser.GameObjects.Container;
-  private configButton!: Phaser.GameObjects.Container;
-
   constructor() {
     super({ key: 'MenuScene' });
   }
@@ -15,90 +10,96 @@ export default class MenuScene extends Phaser.Scene {
     const cx = GAME_CONFIG.width / 2;
     const cy = GAME_CONFIG.height / 2;
 
-    // Título
-    this.title = this.add.text(cx, cy - 150, 'MERGE ARENA', {
-      fontSize: '48px',
+    // Fundo gradiente simulado
+    this.add.rectangle(cx, cy, GAME_CONFIG.width, GAME_CONFIG.height, 0x0f172a, 1);
+
+    // Título maior e mais destacado
+    const title = this.add.text(cx, cy - 200, 'MERGE ARENA', {
+      fontSize: '64px',
       fontFamily: 'Arial Black',
       color: '#F1C40F',
       stroke: '#000000',
-      strokeThickness: 4
+      strokeThickness: 6
     }).setOrigin(0.5);
 
     // Subtítulo
-    this.add.text(cx, cy - 90, 'Auto-Battler Tático', {
-      fontSize: '20px',
+    this.add.text(cx, cy - 120, 'Auto-Battler Tático', {
+      fontSize: '24px',
       fontFamily: 'Arial',
-      color: '#BDC3C7'
+      color: '#ECF0F1'
     }).setOrigin(0.5);
 
-    // Botões (usando retângulos coloridos)
-    this.createButton(cx, cy + 20, '▶ JOGAR', '#27AE60', () => {
+    // Botões maiores
+    this.createButton(cx, cy + 20, '▶ JOGAR', '#27AE60', 220, 60, () => {
       this.scene.start('RulerSelectScene');
     });
 
-    this.createButton(cx, cy + 90, '📊 ESTATÍSTICAS', '#3498DB', () => {
-      // TODO: Implementar tela de stats
-      this.showToast('Stats em breve!');
+    this.createButton(cx, cy + 110, '📊 ESTATÍSTICAS', '#3498DB', 260, 55, () => {
+      this.showToast('Estatísticas em breve!');
     });
 
-    this.createButton(cx, cy + 160, '⚙️ CONFIG', '#95A5A6', () => {
-      // TODO: Tela de configuração
+    this.createButton(cx, cy + 190, '⚙️ CONFIG', '#95A5A6', 200, 55, () => {
       this.showToast('Config em breve!');
     });
 
     // Versão
-    this.add.text(cx, GAME_CONFIG.height - 30, 'v2.0 by MiLord', {
-      fontSize: '14px',
+    this.add.text(cx, GAME_CONFIG.height - 50, 'v2.0 — por MiLord', {
+      fontSize: '16px',
       color: '#7F8C8D'
     }).setOrigin(0.5);
 
     // Animação do título
     this.tweens.add({
-      targets: this.title,
-      y: this.title.y - 5,
-      duration: 1500,
+      targets: title,
+      y: title.y - 10,
+      duration: 2000,
       yoyo: true,
       repeat: -1,
       ease: 'Sine.easeInOut'
     });
   }
 
-  private createButton(x: number, y: number, label: string, color: string, callback: () => void) {
-    const bg = this.add.rectangle(x, y, 240, 50, Phaser.Display.Color.ValueToColor(color).color);
-    bg.setStrokeStyle(3, 0xFFFFFF);
-    bg.setInteractive({ useHandCursor: true });
+  private createButton(x: number, y: number, label: string, color: string, w: number, h: number, callback: () => void) {
+    const bg = this.add.rectangle(x, y, w, h, Phaser.Display.Color.ValueToColor(color).color)
+      .setStrokeStyle(4, 0xFFFFFF);
 
     const text = this.add.text(x, y, label, {
-      fontSize: '22px',
+      fontSize: '24px',
       fontFamily: 'Arial',
       color: '#FFFFFF',
       fontStyle: 'bold'
     }).setOrigin(0.5);
 
-    const container = this.add.container(x, y, [bg, text]);
-    container.setSize(240, 50);
-    container.setInteractive(new Phaser.Geom.Rectangle(-120, -25, 240, 50), Phaser.Geom.Rectangle.Contains);
-    container.on('pointerdown', callback);
+    const btn = this.add.container(x, y, [bg, text]);
+    btn.setSize(w, h);
+    btn.setInteractive(new Phaser.Geom.Rectangle(-w/2, -h/2, w, h), Phaser.Geom.Rectangle.Contains);
+    btn.on('pointerdown', callback);
 
-    container.on('pointerover', () => bg.setFillStyle(Phaser.Display.Color.ValueToColor(color).lighten(20).color));
-    container.on('pointerout', () => bg.setFillStyle(Phaser.Display.Color.ValueToColor(color).color));
+    btn.on('pointerover', () => {
+      bg.setFillStyle(Phaser.Display.Color.ValueToColor(color).lighten(20).color);
+      bg.setStrokeStyle(4, 0xF1C40F);
+    });
+    btn.on('pointerout', () => {
+      bg.setFillStyle(Phaser.Display.Color.ValueToColor(color).color);
+      bg.setStrokeStyle(4, 0xFFFFFF);
+    });
 
-    return container;
+    return btn;
   }
 
   private showToast(msg: string) {
     const cx = GAME_CONFIG.width / 2;
-    const toast = this.add.text(cx, GAME_CONFIG.height - 100, msg, {
+    const toast = this.add.text(cx, GAME_CONFIG.height - 120, msg, {
       fontSize: '18px',
       backgroundColor: '#000000',
       color: '#FFFFFF',
-      padding: { x: 10, y: 5 }
+      padding: { x: 15, y: 8 }
     }).setOrigin(0.5);
 
     this.tweens.add({
       targets: toast,
       alpha: 0,
-      delay: 2000,
+      delay: 2500,
       duration: 500,
       onComplete: () => toast.destroy()
     });

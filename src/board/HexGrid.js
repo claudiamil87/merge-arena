@@ -14,12 +14,6 @@ export class HexGrid {
             writable: true,
             value: []
         });
-        Object.defineProperty(this, "tileStates", {
-            enumerable: true,
-            configurable: true,
-            writable: true,
-            value: new Map()
-        });
         Object.defineProperty(this, "hexPositions", {
             enumerable: true,
             configurable: true,
@@ -31,20 +25,17 @@ export class HexGrid {
     create() {
         const cx = GAME_CONFIG.width / 2;
         const cy = GAME_CONFIG.height / 2 - 50;
-        // Criar grid manualmente
         for (let row = 0; row < BOARD_CONFIG.rows; row++) {
             for (let col = 0; col < BOARD_CONFIG.cols; col++) {
                 const pos = this.hexToPixel(col, row, cx, cy);
                 const key = `${col},${row}`;
-                const zone = this.getZone(row);
-                this.tileStates.set(key, zone);
                 this.hexPositions.set(key, pos);
                 const g = this.scene.add.graphics();
-                this.drawHex(g, pos.x, pos.y, zone);
+                this.drawHex(g, pos.x, pos.y, this.getZone(row));
                 this.tiles.push(g);
             }
         }
-        return { getHexPosition: (col, row) => this.hexPositions.get(`${col},${row}`) };
+        return this;
     }
     hexToPixel(col, row, cx, cy) {
         const size = HEX_CONFIG.cellWidth / 2;
@@ -66,11 +57,16 @@ export class HexGrid {
             const angle = (Math.PI / 3) * i - (Math.PI / 6);
             points.push({ x: x + size * Math.cos(angle), y: y + size * Math.sin(angle) });
         }
-        const zoneColors = zone === 'player' ? ZONE_COLORS.player : zone === 'enemy' ? ZONE_COLORS.enemy : { base: '#34495E', accent: '#7F8C8D' };
+        const zoneColors = zone === 'player' ? ZONE_COLORS.player : zone === 'enemy' ? ZONE_COLORS.enemy : { base: '#2C3E50', accent: '#7F8C8D' };
         g.clear();
-        g.fillStyle(Phaser.Display.Color.ValueToColor(zoneColors.base).color, 0.3);
+        // Fundo mais opaco
+        g.fillStyle(Phaser.Display.Color.ValueToColor(zoneColors.base).color, 0.6);
         g.fillPoints(points, true);
-        g.lineStyle(2, Phaser.Display.Color.ValueToColor(zoneColors.accent).color, 0.8);
+        // Borda mais brilhante
+        g.lineStyle(3, Phaser.Display.Color.ValueToColor(zoneColors.accent).color, 1);
         g.strokePoints(points, true);
+    }
+    getHexPosition(col, row) {
+        return this.hexPositions.get(`${col},${row}`);
     }
 }
