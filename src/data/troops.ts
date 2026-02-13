@@ -149,4 +149,4 @@ export const TROOP_DATA: Record<string, TroopStats> = {
   }
 };
 
-export const ALL_TROOPS = Object.keys(TROUP_DATA);
+export const ALL_TROOPS = Object.keys(TROOP_DATA);

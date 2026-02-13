@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { BoardPlugin } from 'phaser3-rex-plugins';
+import BoardPlugin from 'phaser3-rex-plugins/dist/rexboardplugin.js';
 import { GAME_CONFIG } from './constants';
 
 export const phaserConfig: Phaser.Types.Core.GameConfig = {

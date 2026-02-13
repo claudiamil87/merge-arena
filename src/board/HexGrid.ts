@@ -31,12 +31,14 @@ export class HexGrid {
 
     // Criar tiles visuais
     this.board.iterateEachTile((tile: any) => {
+      const xNum = tile.pixelX as number;
+      const yNum = tile.pixelY as number;
       const key = `${tile.xy.x},${tile.xy.y}`;
-      const zone = this.getZone(tile.xy.y);
+      const zone = this.getZone(tile.xy.y as number);
       this.tileStates.set(key, zone);
 
       const graphics = this.scene.add.graphics();
-      this.drawHex(graphics, tile.pixelX, tile.pixelY, zone);
+      this.drawHex(graphics, xNum, yNum, zone);
       this.tiles.push(graphics);
     });
 

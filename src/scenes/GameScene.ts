@@ -1,8 +1,8 @@
 import Phaser from 'phaser';
-import { GAME_CONFIG, BOARD_CONFIG, TIMING, ECONOMY, BENCH_CONFIG } from '../config/constants';
+import { GAME_CONFIG, TIMING, ECONOMY, BENCH_CONFIG } from '../config/constants';
 import { HexGrid } from '../board/HexGrid';
 import { Troop } from '../entities/Troop';
-import { TROUP_DATA } from '../data/troops';
+import { TROOP_DATA } from '../data/troops';
 
 export default class GameScene extends Phaser.Scene {
   private hexGrid!: HexGrid;
@@ -77,8 +77,6 @@ export default class GameScene extends Phaser.Scene {
     for (let i = 0; i < BENCH_CONFIG.slots; i++) {
       const x = startX + i * (slotSize + gap);
       const slot = this.createSlot(x, benchY, slotSize);
-      slot.setStrokeStyle(2, 0x7F8C8D);
-      slot.setInteractive(new Phaser.Geom.Rectangle(-slotSize / 2, -slotSize / 2, slotSize, slotSize), Phaser.Geom.Rectangle.Contains);
       this.benchSlots.push(slot);
     }
 
@@ -89,8 +87,12 @@ export default class GameScene extends Phaser.Scene {
     }).setOrigin(0, 0.5);
   }
 
-  private createSlot(x: number, y: number, size: number): Phaser.GameObjects.Rectangle {
-    return this.add.rectangle(x, y, size, size, 0x34495E, 0.8);
+  private createSlot(x: number, y: number, size: number): Phaser.GameObjects.Container {
+    const bg = this.add.rectangle(0, 0, size, size, 0x34495E, 0.8).setStrokeStyle(2, 0x7F8C8D);
+    const slot = this.add.container(x, y, [bg]);
+    slot.setSize(size, size);
+    slot.setInteractive({ useHandCursor: true });
+    return slot;
   }
 
   private createShop() {
@@ -194,12 +196,12 @@ export default class GameScene extends Phaser.Scene {
   }
 
   private generateShop() {
-    const allTypes = Object.keys(TROUP_DATA);
+    const allTypes = Object.keys(TROOP_DATA);
     this.gameState.shop = [];
 
     for (let i = 0; i < ECONOMY.shopSize; i++) {
       const type = allTypes[Math.floor(Math.random() * allTypes.length)];
-      const cost = TROUP_DATA[type].cost;
+      const cost = TROOP_DATA[type].cost;
       this.gameState.shop.push({ type, cost });
     }
 
@@ -209,7 +211,7 @@ export default class GameScene extends Phaser.Scene {
   private updateShopUI() {
     this.shopCards.forEach((card, idx) => {
       if (this.gameState.shop[idx]) {
-        const data = TROUP_DATA[this.gameState.shop[idx].type];
+        const data = TROOP_DATA[this.gameState.shop[idx].type];
         const bg = card.getAt(0) as Phaser.GameObjects.Rectangle;
         const costText = card.getAt(1) as Phaser.GameObjects.Text;
         const nameText = card.getAt(2) as Phaser.GameObjects.Text;
