@@ -10,12 +10,12 @@ export default class MenuScene extends Phaser.Scene {
     const cx = GAME_CONFIG.width / 2;
     const cy = GAME_CONFIG.height / 2;
 
-    // Fundo gradiente simulado
-    this.add.rectangle(cx, cy, GAME_CONFIG.width, GAME_CONFIG.height, 0x0f172a, 1);
+    // Fundo visível e contrastante
+    this.cameras.main.setBackgroundColor('#1a1a2e');
 
-    // Título maior e mais destacado
-    const title = this.add.text(cx, cy - 200, 'MERGE ARENA', {
-      fontSize: '64px',
+    // Título
+    const title = this.add.text(cx, 120, 'MERGE ARENA', {
+      fontSize: '56px',
       fontFamily: 'Arial Black',
       color: '#F1C40F',
       stroke: '#000000',
@@ -23,36 +23,39 @@ export default class MenuScene extends Phaser.Scene {
     }).setOrigin(0.5);
 
     // Subtítulo
-    this.add.text(cx, cy - 120, 'Auto-Battler Tático', {
-      fontSize: '24px',
+    this.add.text(cx, 190, 'Auto-Battler Tático', {
+      fontSize: '22px',
       fontFamily: 'Arial',
-      color: '#ECF0F1'
+      color: '#BDC3C7'
     }).setOrigin(0.5);
 
-    // Botões maiores
-    this.createButton(cx, cy + 20, '▶ JOGAR', '#27AE60', 220, 60, () => {
+    // Botões --- centralizados verticalmente
+    const buttonYStart = 320;
+    const buttonSpacing = 100;
+
+    this.createButton(cx, buttonYStart, '▶ JOGAR', '#27AE60', 240, 65, () => {
       this.scene.start('RulerSelectScene');
     });
 
-    this.createButton(cx, cy + 110, '📊 ESTATÍSTICAS', '#3498DB', 260, 55, () => {
+    this.createButton(cx, buttonYStart + buttonSpacing, '📊 ESTATÍSTICAS', '#3498DB', 280, 60, () => {
       this.showToast('Estatísticas em breve!');
     });
 
-    this.createButton(cx, cy + 190, '⚙️ CONFIG', '#95A5A6', 200, 55, () => {
+    this.createButton(cx, buttonYStart + buttonSpacing * 2, '⚙️ CONFIG', '#95A5A6', 220, 60, () => {
       this.showToast('Config em breve!');
     });
 
     // Versão
-    this.add.text(cx, GAME_CONFIG.height - 50, 'v2.0 — por MiLord', {
+    this.add.text(cx, GAME_CONFIG.height - 60, 'v2.0 — Merge Arena MVP', {
       fontSize: '16px',
       color: '#7F8C8D'
     }).setOrigin(0.5);
 
-    // Animação do título
+    // Animação
     this.tweens.add({
       targets: title,
-      y: title.y - 10,
-      duration: 2000,
+      y: title.y - 8,
+      duration: 1800,
       yoyo: true,
       repeat: -1,
       ease: 'Sine.easeInOut'
@@ -60,23 +63,26 @@ export default class MenuScene extends Phaser.Scene {
   }
 
   private createButton(x: number, y: number, label: string, color: string, w: number, h: number, callback: () => void) {
+    // Sombra do botão (mais visível)
+    const shadow = this.add.rectangle(x + 3, y + 3, w, h, 0x000000, 0.4);
+
     const bg = this.add.rectangle(x, y, w, h, Phaser.Display.Color.ValueToColor(color).color)
       .setStrokeStyle(4, 0xFFFFFF);
 
     const text = this.add.text(x, y, label, {
-      fontSize: '24px',
+      fontSize: '26px',
       fontFamily: 'Arial',
       color: '#FFFFFF',
       fontStyle: 'bold'
     }).setOrigin(0.5);
 
-    const btn = this.add.container(x, y, [bg, text]);
+    const btn = this.add.container(x, y, [shadow, bg, text]);
     btn.setSize(w, h);
     btn.setInteractive(new Phaser.Geom.Rectangle(-w/2, -h/2, w, h), Phaser.Geom.Rectangle.Contains);
     btn.on('pointerdown', callback);
 
     btn.on('pointerover', () => {
-      bg.setFillStyle(Phaser.Display.Color.ValueToColor(color).lighten(20).color);
+      bg.setFillStyle(Phaser.Display.Color.ValueToColor(color).lighten(15).color);
       bg.setStrokeStyle(4, 0xF1C40F);
     });
     btn.on('pointerout', () => {
@@ -89,7 +95,7 @@ export default class MenuScene extends Phaser.Scene {
 
   private showToast(msg: string) {
     const cx = GAME_CONFIG.width / 2;
-    const toast = this.add.text(cx, GAME_CONFIG.height - 120, msg, {
+    const toast = this.add.text(cx, GAME_CONFIG.height - 100, msg, {
       fontSize: '18px',
       backgroundColor: '#000000',
       color: '#FFFFFF',
@@ -99,7 +105,7 @@ export default class MenuScene extends Phaser.Scene {
     this.tweens.add({
       targets: toast,
       alpha: 0,
-      delay: 2500,
+      delay: 2000,
       duration: 500,
       onComplete: () => toast.destroy()
     });
