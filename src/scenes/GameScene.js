@@ -12,12 +12,6 @@ export default class GameScene extends Phaser.Scene {
             writable: true,
             value: void 0
         });
-        Object.defineProperty(this, "board", {
-            enumerable: true,
-            configurable: true,
-            writable: true,
-            value: void 0
-        });
         Object.defineProperty(this, "gameState", {
             enumerable: true,
             configurable: true,
@@ -82,7 +76,7 @@ export default class GameScene extends Phaser.Scene {
     create() {
         this.gameState = this.registry.get('gameState');
         this.hexGrid = new HexGrid(this);
-        this.board = this.hexGrid.create();
+        const board = this.hexGrid.create();
         this.createHUD();
         this.createBench();
         this.createShop();

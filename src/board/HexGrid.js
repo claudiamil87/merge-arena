@@ -8,12 +8,6 @@ export class HexGrid {
             writable: true,
             value: void 0
         });
-        Object.defineProperty(this, "board", {
-            enumerable: true,
-            configurable: true,
-            writable: true,
-            value: void 0
-        }); // rexBoard
         Object.defineProperty(this, "tiles", {
             enumerable: true,
             configurable: true,
@@ -26,36 +20,37 @@ export class HexGrid {
             writable: true,
             value: new Map()
         });
+        Object.defineProperty(this, "hexPositions", {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: new Map()
+        });
         this.scene = scene;
     }
     create() {
         const cx = GAME_CONFIG.width / 2;
         const cy = GAME_CONFIG.height / 2 - 50;
-        this.board = this.scene.rexBoard.add.board({
-            grid: {
-                gridType: 'hexagonGrid',
-                x: cx,
-                y: cy,
-                cellWidth: HEX_CONFIG.cellWidth,
-                cellHeight: HEX_CONFIG.cellHeight,
-                staggeraxis: HEX_CONFIG.staggeraxis,
-                staggerindex: HEX_CONFIG.staggerindex
-            },
-            width: BOARD_CONFIG.cols,
-            height: BOARD_CONFIG.rows
-        });
-        // Criar tiles visuais
-        this.board.iterateEachTile((tile) => {
-            const xNum = tile.pixelX;
-            const yNum = tile.pixelY;
-            const key = `${tile.xy.x},${tile.xy.y}`;
-            const zone = this.getZone(tile.xy.y);
-            this.tileStates.set(key, zone);
-            const graphics = this.scene.add.graphics();
-            this.drawHex(graphics, xNum, yNum, zone);
-            this.tiles.push(graphics);
-        });
-        return this.board;
+        // Criar grid manualmente
+        for (let row = 0; row < BOARD_CONFIG.rows; row++) {
+            for (let col = 0; col < BOARD_CONFIG.cols; col++) {
+                const pos = this.hexToPixel(col, row, cx, cy);
+                const key = `${col},${row}`;
+                const zone = this.getZone(row);
+                this.tileStates.set(key, zone);
+                this.hexPositions.set(key, pos);
+                const g = this.scene.add.graphics();
+                this.drawHex(g, pos.x, pos.y, zone);
+                this.tiles.push(g);
+            }
+        }
+        return { getHexPosition: (col, row) => this.hexPositions.get(`${col},${row}`) };
+    }
+    hexToPixel(col, row, cx, cy) {
+        const size = HEX_CONFIG.cellWidth / 2;
+        const x = cx + (col - (BOARD_CONFIG.cols - 1) / 2) * (size * 1.5);
+        const y = cy + row * (size * Math.sqrt(3));
+        return { x, y };
     }
     getZone(row) {
         if (row >= BOARD_CONFIG.playerZoneStartRow)
@@ -68,26 +63,14 @@ export class HexGrid {
         const size = HEX_CONFIG.cellWidth / 2;
         const points = [];
         for (let i = 0; i < 6; i++) {
-            const angle = (Math.PI / 3) * i - (Math.PI / 6); // flat-top rotation
-            points.push({
-                x: x + size * Math.cos(angle),
-                y: y + size * Math.sin(angle)
-            });
+            const angle = (Math.PI / 3) * i - (Math.PI / 6);
+            points.push({ x: x + size * Math.cos(angle), y: y + size * Math.sin(angle) });
         }
         const zoneColors = zone === 'player' ? ZONE_COLORS.player : zone === 'enemy' ? ZONE_COLORS.enemy : { base: '#34495E', accent: '#7F8C8D' };
         g.clear();
-        g.fillStyle(zoneColors.base, 0.3);
+        g.fillStyle(Phaser.Display.Color.ValueToColor(zoneColors.base).color, 0.3);
         g.fillPoints(points, true);
         g.lineStyle(2, Phaser.Display.Color.ValueToColor(zoneColors.accent).color, 0.8);
         g.strokePoints(points, true);
-    }
-    highlightTile(tileKey, color = 0x00FF00) {
-        // TODO: Implementar highlight
-    }
-    clearHighlights() {
-        // TODO: Limpar highlights
-    }
-    getBoard() {
-        return this.board;
     }
 }

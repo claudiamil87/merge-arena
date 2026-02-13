@@ -6,7 +6,6 @@ import { TROOP_DATA } from '../data/troops';
 
 export default class GameScene extends Phaser.Scene {
   private hexGrid!: HexGrid;
-  private board: any;
   private gameState: any;
 
   private benchSlots: Phaser.GameObjects.Container[] = [];
@@ -28,7 +27,7 @@ export default class GameScene extends Phaser.Scene {
   create() {
     this.gameState = this.registry.get('gameState');
     this.hexGrid = new HexGrid(this);
-    this.board = this.hexGrid.create();
+    const board = this.hexGrid.create();
 
     this.createHUD();
     this.createBench();
